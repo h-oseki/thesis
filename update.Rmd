@@ -1,0 +1,291 @@
+---
+title: "update"
+author: "-hoseki"
+date: "7/25/2021"
+output: pdf_document
+---
+
+La idea es tirar todos los resultados de las simulaciones que ya estan finalizadas, que serian: 
+
+* STING cerrada + 2'3'-cGAMP x 3
+* STING cerrada + 2'3'-cGAMP rotado x 2
+* STING cerrada + 3'3'-cGAMP x 1
+* STING cerrada + 2'3'-cGAMP replica 3 extendida (300 ns)
+* STING abierta (just a small reminder of that beautiful simulation)
+
+Por cada simulacion hay resultados de: 
+
+* Root mean square deviation & Radious of gyration
+* Normalized Bfactors: los residuos agregados por homologia estan sombreados en gris, y los que corresponden a la region de polimerizacion en verde pastel. 
+* Exposure of the polymerization domain: la idea es cuantificar la exposicion del sitio de polimerizacion como la distancia del centro de masas de la region de polimerizacion y el centro de masas de la proteina. Para todos los graficos, cuando la distancia es menor a cero, la region de polimerizacion se incrusta (?) mas dentro de la proteina, y cuando es mayor a cero, se aleja o expone. 
+* Link para el jamboard de los puentes de hidrogeno entre el ligando y STING. 
+
+As always, en los analisis de puentes de hidrogeno y B-factors, se descontaron los primeros 100 ns, que corresponden a la estabilizacion de la simulacion. 
+
+Lo que corresponde a la segunda replica de STING + cGAMP rotado tiene un cartelito de "new". 
+
+
+# CLOSED STING + cGAMP (3 REPLICS)
+
+## Root mean square deviation & Radious of gyration
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+ggarrange(rmsd_reps, gr_reps, common.legend = TRUE, legend = "bottom" )
+```
+
+### Barbi comments
+
+La ultima replica (3) es un poco mas inestable, pero las tres simulaciones estabilizan bastante bien, y a valores bastante similares. En el radio de giro hay una cuasi convergencia, me parecio copado.
+
+## Normalized B-factors
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+ggarrange(bfacs_reps_A, bfacs_reps_B, common.legend = TRUE, legend = "bottom")
+```
+
+### Barbi comments
+
+Para las dos primeras replicas, hay una movilidad muy notoria para la region de polimerizacion de la cadena (yay por eso!). Peeeeeero, no parece haber exposicion del sitio de polimerizacion en la ultima replica, cuando si lo hay en las primeras dos (para la cadena A). 
+
+### Ari comments
+
+Hay que analizar en detalle el pico de la cadena A de los residuos 216-226 de la replica 2.
+
+Otra cosa que destaco es la alta flexibilidad de la region conectora en la ultima replica, que esta muy cerca de los extremos.
+
+## Exposure of the polymerization domain
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+grid.arrange(rep1a, rep2a, rep3a, ncol=1, nrow=3,
+     top = textGrob("Normalized distance between the polymerization site and the center of mass",gp=gpar(fontsize=20,font=3)))
+```
+
+### Barbi comments
+
+Para las dos primeras replicas, que queremos un monton, se ve como, en algun momento de la simulacion, la cadena A se distancia del centro de masas, cosa que no se ve en la cadena B. Tambien se ve que la cadena B se mantiene bien insertada en la proteina. 
+
+### Ari comments
+
+En la replica 3 se ve un apartamiento de la posicion inicial en ambas cadenas. Ver por que esto no se refleja en los Bfactors. 
+
+## Puentes de hidrogeno
+
+https://jamboard.google.com/d/1uBEUTJtjxcQmtpwdZ1XPmTFMq620Fix_Gw0bj-d3bVE/edit?usp=sharing
+
+En cada hoja esta el intento de grafico para cada replica, y trate de diferencias por colores los dominios y las cadenas.
+
+### Barbi comments
+
+En cuanto a los puentes de hidrogeno, en las primeras dos replicas, la region de andamiaje que no se expone interactua con el fosfato 3’ del ligando (SER268B), cosa que no pasa con la cadena que si se expone. Por otro lado, en la ultima replica, que no hay exposicion de ninguna de las cadenas, las regiones de andamiaje ni se acercan al ligando.
+
+# CLOSED STING + ROTATED cGAMP (2 REPLICs)
+
+## Root mean square deviation & Radious of gyration
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+ggarrange(rot_rmsd, rot_gr, common.legend = TRUE, legend = "bottom")
+```
+
+### Barbi comments
+
+El radio de giro da perfecto, pero el rmsd tiene sus inestabilidades, principalmente entre los 100 y 150 ns.
+Viendo la simulacion, creo que se debe a la region conectora, porque en ese lapso de tiempo, se van al carajo.
+Otra cosa que me parecio raro, es que en vmd no reconocio a una de las patitas (region conectora) como helices alfa, no se, raro.
+
+New: la nueva simulacion parece estabilizar mejor que la primera. Aun asi, al fin de la simulacion es algo intestable. 
+
+## Normalized B-factors
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+ggarrange(rot_bfacA, rot_bfacB, common.legend = TRUE, legend = "bottom")
+```
+
+### Barbi comments
+
+Bueno, aca se ve que una de las patitas se va al carajo (de hecho, creo que es el valor de bfactor normalizado mas alto que tuve). En cuanto a la region de polimerizacion, ambas regiones parecen tener alta flexibilidad, pero es mayor la flexibilidad de la cadena B (yay por eso), pero super leve en ambas.
+
+New: la nueva simulacion es aun mas aburrida. Hay algo de asimetria en la region de polimerizacion, habiendo mayor fluctuacion en la cadena A (como en las corridas con el ligando "derecho"), pero siguen siendo valores muy bajos. 
+Lo que se va bastante al carajo, son regiones que agregados de la cadena B. El primer pico corresponde a un loop previo a la region de las tapitas, y el segundo a un loop previo a la region C-terminal. 
+
+## Exposure of the polymerization domain
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+grid.arrange(rotrep1a, rotrep2a, ncol=1, nrow=2,
+     top = textGrob("Normalized distance between the polymerization site and the center of mass",gp=gpar(fontsize=20,font=3)))
+```
+
+### Barbi comments
+
+Parece que la region de polimerizacion de la cadena A se aleja rapidamente del centro de masas, y mantiene mucho mas esa distancia, mientras que la region de la cadena B se acerca y aleja con mas frecuencia.
+
+New: es raro, parece que ambas regiones de polimerizacion se alejan del centro de masas. Igual, se mantienen alejadas casi toda la simulacion, lo que puede explicar porque el rmsd dio tan bajo. 
+
+## Puentes de hidrogeno
+
+https://jamboard.google.com/d/1rZgRitDO5EtuazLVGDvUGPaGDtrHRiJ3ADAusQlDURc/edit?usp=sharing
+
+### Barbi comments
+
+El comportamiento en general es opuesto al de las estructuras cerradas con el ligando "derecho", y tanto las tapitas como la region de andamiaje de ambas cadenas interaccionan con el ligando. 
+Al igual que en la primera replica, para la cadena que tiene mayor movilidad de la region de polimerizacion (cadena B), el andamiaje interactua con la base nitrogenada, y en la que tiene menor fluctuacion (cadena A), el anamiaje interactua con los fosfatos. 
+
+New: nueva replica en la hoja 2. El panorama cambia bastante en comparacion a la primera replica. En esta, no hay interaccion entre el andamiaje y el ligando. Algo a notar es que aparecio una interaccion entre la region de dimerizacion de la cadena B y el ligando. 
+
+# CLOSED STING + 3'3'-cGAMP (1 REPLIC)
+
+## Root mean square deviation & Radious of gyration
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+ggarrange(rmsd_33cgamp, gr_33cgamp, common.legend = TRUE, legend = "bottom")
+```
+
+### Barbi comments
+
+Ambos graficos muestran que la simulacion estabilizo bastante bien. No se si hay algo mas que decir. 
+
+## B-factors
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+ggarrange(bfacs_33cgamp_A, bfacs_33cgamp_B, common.legend = TRUE, legend = "bottom")
+```
+
+### Barbi comments
+
+El extremo C-terminal de ambas cadenas es bastante movil, pero no es nada que no hayamos visto antes... 
+En cuanto a la region de polimerizacion, la cadena B tiene una flexibilizacion mayor, pero no hay valores tan altos. Esto puede ser porque la afinidad/reaccion de STING ante 3'3'cGAMP es menor (2'3'cGAMP > cdiGMP > 3'3'cGAMP).
+
+## Exposure of the polymerization domain 
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+rep1_33cgamp_dist
+```
+
+### Barbi comments
+
+La region de polimerizacion de la cadena A se mantiene insertada dentro de STING, mientras que la region de polimerizacion de la cadena B va y viene. 
+
+## Puentes de hidrogeno
+
+https://jamboard.google.com/d/1uEcyzmyU3t4iLKAoaTvG5k8VKqLUR2fZJ-RFq6BA5pE/edit?usp=sharing
+
+### Barbi comments
+
+A diferencia de 2'3'cGAMP, en esta simulacion las tapitas solo interactuan con los fosfatos (en el caso anterior la interaccion era con los fosfatos y las bases nitrogenadas).
+
+Ademas, aparecen interacciones distintas, que involucran a la region de dimerizacion. Algo nuevo para seguir investigando. 
+
+# CLOSED STING + 2'3'cGAMP 3rd REPLIC (300 ns)
+
+Extendimos la simulacion de la 3era replica ya que no teniamos fluctuaciones o movilidades copadas de la region de polimerizacion, y ademas la simulacion no terminaba de estabilizar. 
+
+## Root mean square deviation & Radious of gyration
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+ggarrange(rep3_ext_rmsd, rep3_ext_gr, common.legend = TRUE, legend = "bottom")
+```
+
+### Barbi comments
+
+La simulacion termina estabilizando bastante bien, de hecho con un valor menor al del resto de las simulaciones. 
+
+## B-factors
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+ggarrange(bfacs_rep3_ext_A, bfacs_rep3_ext_B, common.legend = TRUE, legend = "bottom")
+```
+
+### Barbi comments
+
+Bueno, los residuos ni se enteraron que extendimos la simulacion, y no hay fluctuaciones significativas en la region de polimerizacion. 
+
+## Exposure of the polymerization site
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+rep3_ext_dist
+```
+
+Pareciera haber un comportamiento opuesto a las otras dos replicas. Hay que analizarlo mejor. 
+
+## Puentes de hidrogeno
+
+Pagina 4! 
+
+https://jamboard.google.com/d/1uBEUTJtjxcQmtpwdZ1XPmTFMq620Fix_Gw0bj-d3bVE/edit?usp=sharing
+
+### Barbi comments
+
+No hay cambios significativos en la interaccion entre el ligando y STING cuando incrementamos el tiempo de simulacion. Todos los puentes de hidrogeno se mantienen, y algunos tienen un aumento en la ocurrencia, pero ningun cambio es pronunciado. 
+
+# STING ABIERTA (500 ns)
+
+## Root mean square deviation & Radious of gyration
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+ggarrange(abierta_rmsd, abierta_gr, common.legend = TRUE, legend = "bottom")
+```
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+A2 <- ggplot(bfac[1:197,], aes(x = residue, y = nbfac)) + ylim(-0.6, 10.15) + 
+  geom_line(color = "mediumseagreen", size = 1) + ylab("Normalized B-factor") + a +
+  geom_line(aes(y = 0.75), color = "red", alpha = 0.5, linetype = 1) +
+  scale_x_continuous(breaks = c(146, 156, 166, 176, 186, 196, 206, 216, 226, 236, 
+                                246, 256, 266, 276, 286, 296, 306, 316, 326, 336),
+                     labels = paste(c("ALA146", "SER156", "TRP166", "VAL176", "GLU186", 
+                                      "ALA196", "LEU206", "ASP216", "TYR226", "THR236", 
+                                      "LYS246", "ASP256", "PHE266", "MET276", "ARG286", 
+                                      "PHE296", "SER306", "LEU316", "GLU326", "TRP336"))) +
+  annotate("text", x=-Inf, y=Inf, label="Chain A", hjust=-.2, vjust=2, fontface="bold") + 
+  annotate("rect", xmin = 189, xmax=200, ymin= -0.6, ymax=10.15, alpha=.2, fill="grey60") + 
+  annotate("rect", xmin = 232, xmax=244, ymin= -0.6, ymax=10.15, alpha=.2, fill="grey60") +
+  annotate("rect", xmin = 254, xmax=258, ymin= -0.6, ymax=10.15, alpha=.2, fill="grey60") +
+  annotate("rect", xmin = 322, xmax=328, ymin= -0.6, ymax=10.15, alpha=.2, fill="grey60") +
+  annotate("rect", xmin = 276, xmax=290, ymin= -0.6, ymax=10.15, alpha=.2, fill="yellowgreen") +
+  theme(
+    panel.grid.major = element_line(color = NA), 
+    panel.grid.minor = element_line(color = NA),
+    axis.text.x = element_text(angle = 90, face = "bold", size = 7),
+    plot.title = element_text(colour = 'black', size = 15),
+    axis.title = element_text(colour = 'black', face = 'italic'),
+    panel.background = element_rect(fill = "white", colour = "black",),
+    axis.title.x = element_blank()) 
+
+B2 <- ggplot(bfac[198:394,], aes(x = residue, y = nbfac)) + 
+  geom_line(color = "mediumseagreen", size = 1) + ylab(" ") + xlab("Residues") +  a + ylim(-0.6, 10.15) +
+  scale_x_continuous(breaks = c(343, 353, 363, 373, 383, 393, 403, 413, 423, 433, 
+                                443, 453, 463, 473, 483, 493, 503, 513, 523, 533),
+                     labels = paste(c("ALA146", "SER156", "TRP166", "VAL176", "GLU186", 
+                                      "ALA196", "LEU206", "ASP216", "TYR226", "THR236", 
+                                      "LYS246", "ASP256", "PHE266", "MET276", "ARG286", 
+                                      "PHE296", "SER306", "LEU316", "GLU326", "TRP336"))) +
+  geom_line(aes(y = 0.75), color = "red", alpha = 0.5, linetype = 1) + 
+  annotate("text", x=-Inf, y=Inf, label="Chain B", hjust=-.2, vjust=2, fontface="bold") +
+  annotate("rect", xmin = 386, xmax=397, ymin= -0.6, ymax=10.15, alpha=.2, fill="grey60") +
+  annotate("rect", xmin = 429, xmax=441, ymin= -0.6, ymax=10.15, alpha=.2, fill="grey60") +
+  annotate("rect", xmin = 451, xmax=455, ymin= -0.6, ymax=10.15, alpha=.2, fill="grey60") + 
+  annotate("rect", xmin = 519, xmax=525, ymin= -0.6, ymax=10.15, alpha=.2, fill="grey60") +
+  annotate("rect", xmin = 473, xmax=487, ymin= -0.6, ymax=10.15, alpha=.2, fill="yellowgreen") +
+  theme(axis.text.x = element_text(angle = 90, face = "bold", size = 7),
+    panel.grid.major = element_line(color = NA), 
+    panel.grid.minor = element_line(color = NA),
+    plot.title = element_text(colour = 'black', size = 15),
+    axis.title = element_text(colour = 'black', face = 'italic'),
+    panel.background = element_rect(fill = "white", colour = "black",),
+    axis.title.x = element_blank()) 
+ggarrange(A2, B2, common.legend = TRUE, legend = "bottom")
+```
+
+## Exposure of the polymerization domain
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=10, fig.width=15}
+abierta_dist
+```
+
+### Barbi comment
+
+No hay exposicion, algo que esperabamos, y veiamos en la simulacion. Lo piola es quizas que la region de polimerizacion de la cadena A se encuentra mas retraida. 
+
+# Cosas que faltan 
+
+* Ya se largo la simulacion de STING con c-di-GMP, termina este jueves 12 de agosto. 
+* Hay que decidir que largar cuando termine la simulacion de diGMP. Mi opcion mas rapida es una replica, pero si tienen mejores ideaas soy todo oidos. 
+* Pude ver lo de python con Ema, y va queriendo, pero tengo que ver como leer la pagina que calcula interacciones mas en detalle. 

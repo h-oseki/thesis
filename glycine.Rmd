@@ -1,0 +1,859 @@
+---
+title: "glycine"
+author: "-hoseki"
+date: "9/21/2020"
+output: html_document
+---
+
+Las gráficas son sobre 4 simulaciones (una de ellas tiene distintos fiteos):
+
+* STING abierta (con la región transmembrana restringida en z)
+
+* STING cerrada con ligando (con la región transmembrana restringida en z)
+
+* STING cerrada sin ligando (con la región transmembrana restringida en z)
+
+* STING abierta fiteada (con la región transmembrana restringida en xyz)
+
+* STING cerrada con ligando fiteada (con la región transmembrana restringida en xyz)
+
+* STING cerrada sin ligando fiteada (con la región transmembrana restringida en xyz)
+
+* STING abierta sub fitear (con la región transmembrana restringida en xyz)
+
+* STING cerrada con ligando sin fitear (con la región transmembrana restringida en xyz)
+
+* STING cerrada sin ligando sin fitear (con la región transmembrana restringida en xyz)
+
+Y para cada una de las corridas grafique: 
+
+* La diferencia de posición en x, y, z de ambas glicinas en función del tiempo. 
+
+* Las posiciones (xyz) de las glicinas de cada frame, coloreadas por tiempo. 
+
+* Las posiciones (xyz) de las glicinas de cada frame, coloreadas por la distancia. 
+
+En todos los casos grafique cada 10 ns, por lo que grafique 250 puntos.
+
+# CORRIDAS RESTRINGIDAS EN Z
+
+## ESTRUCTURA ABIERTA
+
+### Vectores de los delta de distancia (?)
+
+```{r, warning=FALSE, echo=FALSE}
+library(plotly)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+inactive_lines <- plot_ly(data = lines_6nt6, 
+                  x = ~Deltax,
+                  y = ~Deltay,
+                  z = ~Deltaz, 
+                  type = 'scatter3d', 
+                  mode = 'lines',
+                  opacity = 1, 
+                  line = list(width = 1, 
+                              color = ~tiempo,
+                              colorscale = 'Viridis',
+                              cmin = 0,
+                              cmax = 500,
+                              showscale = TRUE),
+                  showlegend = F)
+inactive_lines <- inactive_lines %>% colorbar(title = 'Tiempo (ns)')
+                   
+inactive_cones <- plot_ly(
+  data = cones_6nt6,
+  type= "cone",
+  x = ~Deltax,
+  y = ~Deltay,
+  z = ~Deltaz,
+  u = ~Deltax*0.9, 
+  v = ~Deltay*0.9, 
+  w = ~Deltaz*0.9,
+  sizeref= 2,
+  anchor= "tip",
+  hoverinfo = "x+y+z+text",
+  colors = "black",
+  text= as.character(cones_6nt6$tiempo),
+  showscale = FALSE) 
+inactive_cones <- inactive_cones %>%
+  layout(
+    scene= list(
+      camera= list(
+        eye= list(x= 1, y= 1, z= 1)
+      )
+    )
+  )
+subplot(inactive_cones, inactive_lines)
+```
+
+### Distancia entre glicinas A y B coloreadas por tiempo
+
+```{r, warning=FALSE, echo=FALSE}
+
+inactive_dist_time <- plot_ly(data = gly_6nt6,
+               type = "scatter3d",
+               mode = 'lines+markers')
+for (i in 1:250){
+  inactive_dist_time <- inactive_dist_time %>% add_trace(
+    x = c(gly_6nt6$x1[pos[i]], gly_6nt6$x2[pos[i]]),
+    y = c(gly_6nt6$y1[pos[i]], gly_6nt6$y2[pos[i]]),
+    z = c(gly_6nt6$z1[pos[i]], gly_6nt6$z2[pos[i]]),
+    color = gly_6nt6$tiempo[pos[i]],
+    colors = Vir[1,i],
+    showlegend=F,
+    marker = list(size = 4))
+}
+
+inactive_dist_time <- inactive_dist_time %>% colorbar(title = 'Tiempo (ns)')
+inactive_dist_time
+```
+
+### Distancia entre glicinas A y B coloreadas por distancia
+
+```{r, warning=FALSE, echo=FALSE}
+inactive_dist_dist <- plot_ly(data = gly_6nt6,
+                              type = "scatter3d",
+                              mode = 'lines+markers')
+for (i in 1:250){
+  inactive_dist_dist <- inactive_dist_dist %>% add_trace(
+    x = c(gly_6nt6$x1[pos[i]], gly_6nt6$x2[pos[i]]),
+    y = c(gly_6nt6$y1[pos[i]], gly_6nt6$y2[pos[i]]),
+    z = c(gly_6nt6$z1[pos[i]], gly_6nt6$z2[pos[i]]),
+    color = gly_6nt6$dist[pos[i]],
+    showlegend=F,
+    marker = list(size = 4))
+}
+
+inactive_dist_dist <- inactive_dist_dist %>% colorbar(title = 'Distancia entre glicinas (nm)')
+inactive_dist_dist
+```
+
+## ESTRUCTURA CERRADA CON LIGANDO 
+
+### Vectores de los delta de distancia (?)
+
+```{r, warning=FALSE, echo=FALSE}
+active_lines <- plot_ly(data = lines_6nt7_holo, 
+                        x = ~Deltax,
+                        y = ~Deltay,
+                        z = ~Deltaz, 
+                        type = 'scatter3d', 
+                        mode = 'lines',
+                        opacity = 1, 
+                        line = list(width = 1, 
+                                    color = ~tiempo,
+                                    colorscale = 'Viridis',
+                                    cmin = 0,
+                                    cmax = 500,
+                                    showscale = TRUE),
+                        showlegend = F)
+active_lines <- active_lines %>% colorbar(title = 'Tiempo (ns)')
+active_cones <- plot_ly(
+  data = cones_6nt7_holo,
+  type= "cone",
+  x = ~Deltax,
+  y = ~Deltay,
+  z = ~Deltaz,
+  u = ~Deltax*0.9, 
+  v = ~Deltay*0.9, 
+  w = ~Deltaz*0.9,
+  sizeref= 2,
+  anchor= "tip",
+  hoverinfo = "x+y+z+text",
+  colors = "black",
+  text= as.character(cones_6nt7_holo$tiempo),
+  showscale = FALSE)  
+active_cones <- active_cones %>%
+  layout(
+    scene= list(
+      camera= list(
+        eye= list(x= 1, y= 1, z= 1)
+      )
+    )
+  )
+
+subplot(active_cones, active_lines)
+```
+
+### Distancia entre glicinas A y B coloreadas por tiempo
+
+```{r, warning=FALSE, echo=FALSE}
+
+active_dist_time <- plot_ly(data = gly_6nt7_holo,
+               type = "scatter3d",
+               mode = 'lines+markers')
+for (i in 1:250){
+  active_dist_time <- active_dist_time %>% add_trace(
+    x = c(gly_6nt7_holo$x1[pos[i]], gly_6nt7_holo$x2[pos[i]]),
+    y = c(gly_6nt7_holo$y1[pos[i]], gly_6nt7_holo$y2[pos[i]]),
+    z = c(gly_6nt7_holo$z1[pos[i]], gly_6nt7_holo$z2[pos[i]]),
+    color = gly_6nt7_holo$tiempo[pos[i]],
+    colors = Vir[1,i],
+    showlegend=F,
+    marker = list(size = 4))
+}
+active_dist_time <- active_dist_time %>% colorbar(title = 'Tiempo (ns)')
+active_dist_time
+
+```
+
+### Distancia entre glicinas A y B coloreadas por distancia
+
+```{r, warning=FALSE, echo=FALSE}
+
+active_dist_dist <- plot_ly(data = gly_6nt7_holo,
+                            type = "scatter3d",
+                            mode = 'lines+markers')
+for (i in 1:250){
+  active_dist_dist <- active_dist_dist %>% add_trace(
+    x = c(gly_6nt7_holo$x1[pos[i]], gly_6nt7_holo$x2[pos[i]]),
+    y = c(gly_6nt7_holo$y1[pos[i]], gly_6nt7_holo$y2[pos[i]]),
+    z = c(gly_6nt7_holo$z1[pos[i]], gly_6nt7_holo$z2[pos[i]]),
+    color = gly_6nt7_holo$dist[pos[i]],
+    showlegend=F,
+    marker = list(size = 4))
+}
+active_dist_dist <- active_dist_dist %>% colorbar(title = 'Distancia entre glicinas (nm)')
+active_dist_dist
+
+```
+
+## ESTRUCTURA CERRADA SIN LIGANDO
+
+### Vectores de los delta de distancia (?)
+
+```{r, warning=FALSE, echo=FALSE}
+noligand_lines <- plot_ly(data = lines_6nt7_apo, 
+                          x = ~Deltax,
+                          y = ~Deltay,
+                          z = ~Deltaz, 
+                          type = 'scatter3d', 
+                          mode = 'lines',
+                          opacity = 1, 
+                          line = list(width = 1, 
+                                      color = ~tiempo,
+                                      colorscale = 'Viridis',
+                                      cmin = 0,
+                                      cmax = 500,
+                                      showscale = TRUE),
+                          showlegend = F)
+noligand_lines <- noligand_lines %>% colorbar(title = 'Tiempo (ns)')
+noligand_cones <- plot_ly(
+  data = cones_6nt7_apo,
+  type= "cone",
+  x = ~Deltax,
+  y = ~Deltay,
+  z = ~Deltaz,
+  u = ~Deltax*0.9, 
+  v = ~Deltay*0.9, 
+  w = ~Deltaz*0.9,
+  sizeref= 2,
+  anchor= "tip",
+  hoverinfo = "x+y+z+text",
+  colors = "black",
+  text= as.character(cones_6nt7_apo$tiempo),
+  showscale = FALSE)   
+
+noligand_cones <- noligand_cones %>%
+  layout(
+    scene= list(
+      camera= list(
+        eye= list(x= 1, y= 1, z= 1)
+      )
+    )
+  )
+
+subplot(noligand_cones, noligand_lines)
+```
+
+### Distancia entre glicinas A y B coloreadas por tiempo
+
+```{r, warning=FALSE, echo=FALSE}
+noligand_dist_time <- plot_ly(data = gly_6nt7_apo,
+               type = "scatter3d",
+               mode = 'lines+markers')
+for (i in 1:250){
+  noligand_dist_time <- noligand_dist_time %>% add_trace(
+    x = c(gly_6nt7_apo$x1[pos[i]], gly_6nt7_apo$x2[pos[i]]),
+    y = c(gly_6nt7_apo$y1[pos[i]], gly_6nt7_apo$y2[pos[i]]),
+    z = c(gly_6nt7_apo$z1[pos[i]], gly_6nt7_apo$z2[pos[i]]),
+    color = gly_6nt7_apo$tiempo[pos[i]],
+    colors = Vir[1,i],
+    showlegend=F,
+    marker = list(size = 4))
+}
+noligand_dist_time <- noligand_dist_time %>% colorbar(title = 'Tiempo (ns)')
+noligand_dist_time
+```
+
+### Distancia entre glicinas A y B coloreadas por distancia
+
+```{r, warning=FALSE, echo=FALSE}
+noligand_dist_dist <- plot_ly(data = gly_6nt7_apo,
+                              type = "scatter3d",
+                              mode = 'lines+markers')
+for (i in 1:250){
+  noligand_dist_dist <- noligand_dist_dist %>% add_trace(
+    x = c(gly_6nt7_apo$x1[pos[i]], gly_6nt7_apo$x2[pos[i]]),
+    y = c(gly_6nt7_apo$y1[pos[i]], gly_6nt7_apo$y2[pos[i]]),
+    z = c(gly_6nt7_apo$z1[pos[i]], gly_6nt7_apo$z2[pos[i]]),
+    color = gly_6nt7_apo$dist[pos[i]],
+    showlegend=F,
+    marker = list(size = 4))
+}
+noligand_dist_dist <- noligand_dist_dist %>% colorbar(title = 'Distancia entre glicinas (nm)')
+noligand_dist_dist
+```
+
+
+# CORRIDAS RESTRINGIDAS EN XYZ FITEADAS
+
+## ESTRUCTURA ABIERTA FITEADA
+
+### Vectores de los delta de distancia (?)
+
+```{r, warning=FALSE, echo=FALSE}
+inactive_rest_lines <- plot_ly(data = lines_6nt6_rest, 
+                          x = ~Deltax,
+                          y = ~Deltay,
+                          z = ~Deltaz, 
+                          type = 'scatter3d', 
+                          mode = 'lines',
+                          opacity = 1, 
+                          line = list(width = 1, 
+                                      color = ~tiempo,
+                                      colorscale = 'Viridis',
+                                      cmin = 0,
+                                      cmax = 500,
+                                      showscale = TRUE),
+                          showlegend = F)
+inactive_rest_lines <- inactive_rest_lines %>% colorbar(title = 'Tiempo (ns)')
+
+inactive_rest_cones <- plot_ly(
+  data = cones_6nt6_rest,
+  type= "cone",
+  x = ~Deltax,
+  y = ~Deltay,
+  z = ~Deltaz,
+  u = ~Deltax*0.9, 
+  v = ~Deltay*0.9, 
+  w = ~Deltaz*0.9,
+  sizeref= 2,
+  anchor= "tip",
+  hoverinfo = "x+y+z+text",
+  colors = "black",
+  text= as.character(cones_6nt6_rest$tiempo),
+  showscale = FALSE) 
+inactive_rest_cones <- inactive_rest_cones %>%
+  layout(
+    scene= list(
+      camera= list(
+        eye= list(x= 1, y= 1, z= 1)
+      )
+    )
+  )
+subplot(inactive_rest_cones, inactive_rest_lines)
+```
+
+### Distancia entre glicinas A y B coloreadas por tiempo
+
+```{r, warning=FALSE, echo=FALSE}
+
+inactive_rest_dist_time <- plot_ly(data = gly_6nt6_rest,
+                              type = "scatter3d",
+                              mode = 'lines+markers')
+for (i in 1:250){
+  inactive_rest_dist_time <- inactive_rest_dist_time %>% add_trace(
+    x = c(gly_6nt6_rest$x1[pos[i]], gly_6nt6_rest$x2[pos[i]]),
+    y = c(gly_6nt6_rest$y1[pos[i]], gly_6nt6_rest$y2[pos[i]]),
+    z = c(gly_6nt6_rest$z1[pos[i]], gly_6nt6_rest$z2[pos[i]]),
+    color = gly_6nt6_rest$tiempo[pos[i]],
+    colors = Vir[1,i],
+    showlegend=F,
+    marker = list(size = 4))
+}
+
+inactive_rest_dist_time <- inactive_rest_dist_time %>% colorbar(title = 'Tiempo (ns)')
+inactive_rest_dist_time
+
+```
+
+### Distancia entre glicinas A y B coloreadas por distancia
+
+```{r, warning=FALSE, echo=FALSE}
+inactive_rest_dist_dist <- plot_ly(data = gly_6nt6_rest,
+                              type = "scatter3d",
+                              mode = 'lines+markers')
+for (i in 1:250){
+  inactive_rest_dist_dist <- inactive_rest_dist_dist %>% add_trace(
+    x = c(gly_6nt6_rest$x1[pos[i]], gly_6nt6_rest$x2[pos[i]]),
+    y = c(gly_6nt6_rest$y1[pos[i]], gly_6nt6_rest$y2[pos[i]]),
+    z = c(gly_6nt6_rest$z1[pos[i]], gly_6nt6_rest$z2[pos[i]]),
+    color = gly_6nt6_rest$dist[pos[i]],
+    showlegend=F)
+}
+
+inactive_rest_dist_dist <- inactive_rest_dist_dist %>% colorbar(title = 'Distancia entre glicinas (nm)')
+inactive_rest_dist_dist
+```
+
+
+## ESTRUCTURA CERRADA CON LIGANDO FITEADA
+
+### Vectores de los delta de distancia (?)
+
+```{r, warning=FALSE, echo=FALSE}
+restricted_lines <-  plot_ly(data = lines_6nt7_holo_rest, 
+                             x = ~Deltax,
+                             y = ~Deltay,
+                             z = ~Deltaz, 
+                             type = 'scatter3d', 
+                             mode = 'lines',
+                             opacity = 1, 
+                             line = list(width = 1, 
+                                         color = ~tiempo,
+                                         colorscale = 'Viridis',
+                                         cmin = 0,
+                                         cmax = 500,
+                                         showscale = TRUE),
+                             showlegend = F)
+restricted_lines <- restricted_lines %>% colorbar(title = 'Tiempo (ns)')
+restricted_cones <- plot_ly(
+  data = cones_6nt7_holo_rest,
+  type= "cone",
+  x = ~Deltax,
+  y = ~Deltay,
+  z = ~Deltaz,
+  u = ~Deltax*0.9, 
+  v = ~Deltay*0.9, 
+  w = ~Deltaz*0.9,
+  sizeref= 2,
+  anchor= "tip",
+  hoverinfo = "x+y+z+text",
+  colors = "black",
+  text= as.character(cones_6nt7_holo_rest$tiempo),
+  showscale = FALSE)
+
+restricted_cones <- restricted_cones %>%
+  layout(
+    scene= list(
+      camera= list(
+        eye= list(x= 1, y= 1, z= 1)
+      )
+    )
+  )
+
+subplot(restricted_cones, restricted_lines)
+```
+
+### Distancia entre glicinas A y B coloreadas por tiempo
+
+```{r, warning=FALSE, echo=FALSE}
+
+restricted_dist_time <- plot_ly(data = gly_6nt7_holo_rest,
+               type = "scatter3d",
+               mode = 'lines+markers')
+for (i in 1:250){
+  restricted_dist_time <- restricted_dist_time %>% add_trace(
+    x = c(gly_6nt7_holo_rest$x1[pos[i]], gly_6nt7_holo_rest$x2[pos[i]]),
+    y = c(gly_6nt7_holo_rest$y1[pos[i]], gly_6nt7_holo_rest$y2[pos[i]]),
+    z = c(gly_6nt7_holo_rest$z1[pos[i]], gly_6nt7_holo_rest$z2[pos[i]]),
+    color = gly_6nt7_holo_rest$tiempo[pos[i]],
+    colors = Vir[1,i],
+    showlegend=F,
+    marker = list(size = 4))
+}
+
+restricted_dist_time <- restricted_dist_time %>% colorbar(title = 'Tiempo (ns)')
+
+restricted_dist_time
+
+```
+
+### Distancia entre glicinas A y B coloreadas por distancia
+
+```{r, warning=FALSE, echo=FALSE}
+restricted_dist_dist <- plot_ly(data = gly_6nt7_holo_rest,
+                                type = "scatter3d",
+                                mode = 'lines+markers')
+for (i in 1:250){
+  restricted_dist_dist <- restricted_dist_dist %>% add_trace(
+    x = c(gly_6nt7_holo_rest$x1[pos[i]], gly_6nt7_holo_rest$x2[pos[i]]),
+    y = c(gly_6nt7_holo_rest$y1[pos[i]], gly_6nt7_holo_rest$y2[pos[i]]),
+    z = c(gly_6nt7_holo_rest$z1[pos[i]], gly_6nt7_holo_rest$z2[pos[i]]),
+    color = gly_6nt7_holo_rest$dist[pos[i]],
+    showlegend=F,
+    marker = list(size = 4))
+}
+
+restricted_dist_dist <- restricted_dist_dist %>% colorbar(title = 'Distancia entre glicinas (nm)')
+
+restricted_dist_dist
+```
+
+## ESTRUCTURA CERRADA SIN LIGANDO FITEADA
+
+### Vectores de los delta de distancia (?)
+
+```{r, warning=FALSE, echo=FALSE}
+noligand_rest_lines <- plot_ly(data = lines_6nt7_apo_rest, 
+                          x = ~Deltax,
+                          y = ~Deltay,
+                          z = ~Deltaz, 
+                          type = 'scatter3d', 
+                          mode = 'lines',
+                          opacity = 1, 
+                          line = list(width = 1, 
+                                      color = ~tiempo,
+                                      colorscale = 'Viridis',
+                                      cmin = 0,
+                                      cmax = 500,
+                                      showscale = TRUE),
+                          showlegend = F)
+noligand_rest_lines <- noligand_rest_lines %>% colorbar(title = 'Tiempo (ns)')
+
+noligand_rest_cones <- plot_ly(
+  data = cones_6nt7_apo_rest,
+  type= "cone",
+  x = ~Deltax,
+  y = ~Deltay,
+  z = ~Deltaz,
+  u = ~Deltax*0.9, 
+  v = ~Deltay*0.9, 
+  w = ~Deltaz*0.9,
+  sizeref= 2,
+  anchor= "tip",
+  hoverinfo = "x+y+z+text",
+  colors = "black",
+  text= as.character(cones_6nt7_apo_rest$tiempo),
+  showscale = FALSE)   
+
+noligand_rest_cones <- noligand_rest_cones %>%
+  layout(
+    scene= list(
+      camera= list(
+        eye= list(x= 1, y= 1, z= 1)
+      )
+    )
+  )
+
+subplot(noligand_rest_cones, noligand_rest_lines)
+```
+
+### Distancia entre glicinas A y B coloreadas por tiempo
+
+```{r, warning=FALSE, echo=FALSE}
+noligand_rest_dist_time <- plot_ly(data = gly_6nt7_apo_rest,
+                              type = "scatter3d",
+                              mode = 'lines+markers')
+for (i in 1:250){
+  noligand_rest_dist_time <- noligand_rest_dist_time %>% add_trace(
+    x = c(gly_6nt7_apo_rest$x1[pos[i]], gly_6nt7_apo_rest$x2[pos[i]]),
+    y = c(gly_6nt7_apo_rest$y1[pos[i]], gly_6nt7_apo_rest$y2[pos[i]]),
+    z = c(gly_6nt7_apo_rest$z1[pos[i]], gly_6nt7_apo_rest$z2[pos[i]]),
+    color = gly_6nt7_apo_rest$tiempo[pos[i]],
+    colors = Vir[1,i],
+    showlegend=F)
+}
+noligand_rest_dist_time <- noligand_rest_dist_time %>% colorbar(title = 'Tiempo (ns)')
+noligand_rest_dist_time
+
+```
+
+### Distancia entre glicinas A y B coloreadas por distancia
+
+```{r, warning=FALSE, echo=FALSE}
+noligand_rest_dist_dist <- plot_ly(data = gly_6nt7_apo_rest,
+                              type = "scatter3d",
+                              mode = 'lines+markers')
+for (i in 1:250){
+  noligand_rest_dist_dist <- noligand_rest_dist_dist %>% add_trace(
+    x = c(gly_6nt7_apo_rest$x1[pos[i]], gly_6nt7_apo_rest$x2[pos[i]]),
+    y = c(gly_6nt7_apo_rest$y1[pos[i]], gly_6nt7_apo_rest$y2[pos[i]]),
+    z = c(gly_6nt7_apo_rest$z1[pos[i]], gly_6nt7_apo_rest$z2[pos[i]]),
+    color = gly_6nt7_apo_rest$dist[pos[i]],
+    showlegend=F)
+}
+noligand_rest_dist_dist <- noligand_rest_dist_dist %>% colorbar(title = 'Distancia entre glicinas (nm)')
+noligand_rest_dist_dist
+```
+
+
+
+
+
+# CORRIDAS RESTRINGIDAS EN XYZ SIN FITEADAR
+
+## ESTRUCTURA ABIERTA SIN FITEAR
+
+### Vectores de los delta de distancia (?)
+
+```{r, warning=FALSE, echo=FALSE}
+inactive_rest_nofit_lines <- plot_ly(data = lines_6nt6_rest_nofit, 
+                          x = ~Deltax,
+                          y = ~Deltay,
+                          z = ~Deltaz, 
+                          type = 'scatter3d', 
+                          mode = 'lines',
+                          opacity = 1, 
+                          line = list(width = 1, 
+                                      color = ~tiempo,
+                                      colorscale = 'Viridis',
+                                      cmin = 0,
+                                      cmax = 500,
+                                      showscale = TRUE),
+                          showlegend = F)
+inactive_rest_nofit_lines <- inactive_rest_nofit_lines %>% colorbar(title = 'Tiempo (ns)')
+
+inactive_rest_nofit_cones <- plot_ly(
+  data = cones_6nt6_rest_nofit,
+  type= "cone",
+  x = ~Deltax,
+  y = ~Deltay,
+  z = ~Deltaz,
+  u = ~Deltax*0.9, 
+  v = ~Deltay*0.9, 
+  w = ~Deltaz*0.9,
+  sizeref= 2,
+  anchor= "tip",
+  hoverinfo = "x+y+z+text",
+  colors = "black",
+  text= as.character(cones_6nt6_rest_nofit$tiempo),
+  showscale = FALSE) 
+inactive_rest_nofit_cones <- inactive_rest_nofit_cones %>%
+  layout(
+    scene= list(
+      camera= list(
+        eye= list(x= 1, y= 1, z= 1)
+      )
+    )
+  )
+subplot(inactive_rest_nofit_cones, inactive_rest_nofit_lines)
+```
+
+### Distancia entre glicinas A y B coloreadas por tiempo
+
+```{r, warning=FALSE, echo=FALSE}
+inactive_rest_nofit_dist_time <- plot_ly(data = gly_6nt6_rest_nofit,
+                              type = "scatter3d",
+                              mode = 'lines+markers')
+for (i in 1:250){
+  inactive_rest_nofit_dist_time <- inactive_rest_nofit_dist_time %>% add_trace(
+    x = c(gly_6nt6_rest_nofit$x1[pos[i]], gly_6nt6_rest_nofit$x2[pos[i]]),
+    y = c(gly_6nt6_rest_nofit$y1[pos[i]], gly_6nt6_rest_nofit$y2[pos[i]]),
+    z = c(gly_6nt6_rest_nofit$z1[pos[i]], gly_6nt6_rest_nofit$z2[pos[i]]),
+    color = gly_6nt6_rest_nofit$tiempo[pos[i]],
+    colors = Vir[1,i],
+    showlegend=F,
+    marker = list(size = 4))
+}
+
+inactive_rest_nofit_dist_time <- inactive_rest_nofit_dist_time %>% colorbar(title = 'Tiempo (ns)')
+inactive_rest_nofit_dist_time
+
+```
+
+### Distancia entre glicinas A y B coloreadas por distancia
+
+```{r, warning=FALSE, echo=FALSE}
+inactive_rest_nofit_dist_dist <- plot_ly(data = gly_6nt6_rest_nofit,
+                              type = "scatter3d",
+                              mode = 'lines+markers')
+for (i in 1:250){
+  inactive_rest_nofit_dist_dist <- inactive_rest_nofit_dist_dist %>% add_trace(
+    x = c(gly_6nt6_rest_nofit$x1[pos[i]], gly_6nt6_rest_nofit$x2[pos[i]]),
+    y = c(gly_6nt6_rest_nofit$y1[pos[i]], gly_6nt6_rest_nofit$y2[pos[i]]),
+    z = c(gly_6nt6_rest_nofit$z1[pos[i]], gly_6nt6_rest_nofit$z2[pos[i]]),
+    color = gly_6nt6_rest_nofit$dist[pos[i]],
+    showlegend=F)
+}
+
+inactive_rest_nofit_dist_dist <- inactive_rest_nofit_dist_dist %>% colorbar(title = 'Distancia entre glicinas (nm)')
+inactive_rest_nofit_dist_dist
+```
+
+
+## ESTRUCTURA CERRADA CON LIGANDO SIN FITEAR
+
+### Vectores de los delta de distancia (?)
+
+```{r, warning=FALSE, echo=FALSE}
+nofit_lines <- plot_ly(data = lines_6nt7_holo_rest_nofit, 
+                       x = ~Deltax,
+                       y = ~Deltay,
+                       z = ~Deltaz, 
+                       type = 'scatter3d', 
+                       mode = 'lines',
+                       opacity = 1, 
+                       line = list(width = 1, 
+                                   color = ~tiempo,
+                                   colorscale = 'Viridis',
+                                   cmin = 0,
+                                   cmax = 500,
+                                   showscale = TRUE),
+                       showlegend = F)
+nofit_lines <- nofit_lines %>% colorbar(title = 'Tiempo (ns)')
+nofit_cones <- plot_ly(
+  data = cones_6nt7_holo_rest_nofit,
+  type= "cone",
+  x = ~Deltax,
+  y = ~Deltay,
+  z = ~Deltaz,
+  u = ~Deltax*0.9, 
+  v = ~Deltay*0.9, 
+  w = ~Deltaz*0.9,
+  sizeref= 2,
+  anchor= "tip",
+  hoverinfo = "x+y+z+text",
+  colors = "black",
+  text= as.character(cones_6nt7_holo_rest_nofit$tiempo),
+  showscale = FALSE)
+
+nofit_cones <- nofit_cones %>%
+  layout(
+    scene= list(
+      camera= list(
+        eye= list(x= 1, y= 1, z= 1)
+      )
+    )
+  )
+
+subplot(nofit_cones, nofit_lines)
+```
+
+### Distancia entre glicinas A y B coloreadas por tiempo
+
+```{r, warning=FALSE, echo=FALSE}
+
+nofit_dist_time <- plot_ly(data = gly_6nt7_holo_rest_nofit,
+               type = "scatter3d",
+               mode = 'lines+markers')
+for (i in 1:250){
+  nofit_dist_time <- nofit_dist_time %>% add_trace(
+    x = c(gly_6nt7_holo_rest_nofit$x1[pos[i]], gly_6nt7_holo_rest_nofit$x2[pos[i]]),
+    y = c(gly_6nt7_holo_rest_nofit$y1[pos[i]], gly_6nt7_holo_rest_nofit$y2[pos[i]]),
+    z = c(gly_6nt7_holo_rest_nofit$z1[pos[i]], gly_6nt7_holo_rest_nofit$z2[pos[i]]),
+    color = gly_6nt7_holo_rest_nofit$tiempo[pos[i]],
+    colors = Vir[1,i],
+    showlegend=F,
+    marker = list(size = 4))
+}
+
+nofit_dist_time <- nofit_dist_time %>% colorbar(title = 'Tiempo (ns)')
+nofit_dist_time
+
+```
+
+### Distancia entre glicinas A y B coloreadas por distancia
+
+```{r, warning=FALSE, echo=FALSE}
+nofit_dist_dist <- plot_ly(data = gly_6nt7_holo_rest_nofit,
+                           type = "scatter3d",
+                           mode = 'lines+markers')
+for (i in 1:250){
+  nofit_dist_dist <- nofit_dist_dist %>% add_trace(
+    x = c(gly_6nt7_holo_rest_nofit$x1[pos[i]], gly_6nt7_holo_rest_nofit$x2[pos[i]]),
+    y = c(gly_6nt7_holo_rest_nofit$y1[pos[i]], gly_6nt7_holo_rest_nofit$y2[pos[i]]),
+    z = c(gly_6nt7_holo_rest_nofit$z1[pos[i]], gly_6nt7_holo_rest_nofit$z2[pos[i]]),
+    color = gly_6nt7_holo_rest_nofit$dist[pos[i]],
+    showlegend=F,
+    marker = list(size = 4))
+}
+
+nofit_dist_dist <- nofit_dist_dist %>% colorbar(title = 'Distancia entre glicinas (nm)')
+nofit_dist_dist
+```
+
+
+## ESTRUCTURA CERRADA SIN LIGANDO SIN FITEAR
+
+### Vectores de los delta de distancia (?)
+
+```{r, warning=FALSE, echo=FALSE}
+noligand_rest_nofit_lines <- plot_ly(data = lines_6nt7_apo_rest_nofit, 
+                          x = ~Deltax,
+                          y = ~Deltay,
+                          z = ~Deltaz, 
+                          type = 'scatter3d', 
+                          mode = 'lines',
+                          opacity = 1, 
+                          line = list(width = 1, 
+                                      color = ~tiempo,
+                                      colorscale = 'Viridis',
+                                      cmin = 0,
+                                      cmax = 500,
+                                      showscale = TRUE),
+                          showlegend = F)
+noligand_rest_nofit_lines <- noligand_rest_nofit_lines %>% colorbar(title = 'Tiempo (ns)')
+
+noligand_rest_nofit_cones <- plot_ly(
+  data = cones_6nt7_apo_rest_nofit,
+  type= "cone",
+  x = ~Deltax,
+  y = ~Deltay,
+  z = ~Deltaz,
+  u = ~Deltax*0.9, 
+  v = ~Deltay*0.9, 
+  w = ~Deltaz*0.9,
+  sizeref= 2,
+  anchor= "tip",
+  hoverinfo = "x+y+z+text",
+  colors = "black",
+  text= as.character(cones_6nt7_apo_rest_nofit$tiempo),
+  showscale = FALSE)   
+
+noligand_rest_nofit_cones <- noligand_rest_nofit_cones %>%
+  layout(
+    scene= list(
+      camera= list(
+        eye= list(x= 1, y= 1, z= 1)
+      )
+    )
+  )
+
+subplot(noligand_rest_nofit_cones, noligand_rest_nofit_lines)
+```
+
+### Distancia entre glicinas A y B coloreadas por tiempo
+
+```{r, warning=FALSE, echo=FALSE}
+noligand_rest_nofit_dist_time <- plot_ly(data = gly_6nt7_apo_rest_nofit,
+                              type = "scatter3d",
+                              mode = 'lines+markers')
+for (i in 1:250){
+  noligand_rest_nofit_dist_time <- noligand_rest_nofit_dist_time %>% add_trace(
+    x = c(gly_6nt7_apo_rest_nofit$x1[pos[i]], gly_6nt7_apo_rest_nofit$x2[pos[i]]),
+    y = c(gly_6nt7_apo_rest_nofit$y1[pos[i]], gly_6nt7_apo_rest_nofit$y2[pos[i]]),
+    z = c(gly_6nt7_apo_rest_nofit$z1[pos[i]], gly_6nt7_apo_rest_nofit$z2[pos[i]]),
+    color = gly_6nt7_apo_rest_nofit$tiempo[pos[i]],
+    colors = Vir[1,i],
+    showlegend=F)
+}
+noligand_rest_nofit_dist_time <- noligand_rest_nofit_dist_time %>% colorbar(title = 'Tiempo (ns)')
+noligand_rest_nofit_dist_time
+
+```
+
+### Distancia entre glicinas A y B coloreadas por distancia
+
+```{r, warning=FALSE, echo=FALSE}
+noligand_rest_nofit_dist_dist <- plot_ly(data = gly_6nt7_apo_rest_nofit,
+                              type = "scatter3d",
+                              mode = 'lines+markers')
+for (i in 1:250){
+  noligand_rest_nofit_dist_dist <- noligand_rest_nofit_dist_dist %>% add_trace(
+    x = c(gly_6nt7_apo_rest_nofit$x1[pos[i]], gly_6nt7_apo_rest_nofit$x2[pos[i]]),
+    y = c(gly_6nt7_apo_rest_nofit$y1[pos[i]], gly_6nt7_apo_rest_nofit$y2[pos[i]]),
+    z = c(gly_6nt7_apo_rest_nofit$z1[pos[i]], gly_6nt7_apo_rest_nofit$z2[pos[i]]),
+    color = gly_6nt7_apo_rest_nofit$dist[pos[i]],
+    colors = Vir[1,i],
+    showlegend=F)
+}
+noligand_rest_nofit_dist_dist <- noligand_rest_nofit_dist_dist %>% colorbar(title = 'Distancia entre glicinas (nm)')
+noligand_rest_nofit_dist_dist
+```
+
+
+

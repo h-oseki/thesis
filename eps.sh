@@ -1,0 +1,12 @@
+gmx_mpi xpm2ps -f abierta-rep1-frames.xpm -o abierta-rep1-frames.eps -rainbow blue
+gmx_mpi xpm2ps -f abierta-rep2-frames.xpm -o abierta-rep2-frames.eps -rainbow blue
+gmx_mpi xpm2ps -f cerrada-rep1-frames.xpm -o cerrada-rep1-frames.eps -rainbow blue
+gmx_mpi xpm2ps -f cerrada-rep2-frames.xpm -o cerrada-rep2-frames.eps -rainbow blue
+gmx_mpi xpm2ps -f v160m-rep1-frames.xpm -o v160m-rep1-frames.eps -rainbow blue
+gmx_mpi xpm2ps -f v160m-rep2-frames.xpm -o v160m-rep2-frames.eps -rainbow blue
+gmx_mpi xpm2ps -f abierta-rep1-mean.xpm -o abierta-rep1-mean.eps -rainbow blue
+gmx_mpi xpm2ps -f abierta-rep2-mean.xpm -o abierta-rep2-mean.eps -rainbow blue
+gmx_mpi xpm2ps -f cerrada-rep1-mean.xpm -o cerrada-rep1-mean.eps -rainbow blue
+gmx_mpi xpm2ps -f cerrada-rep2-mean.xpm -o cerrada-rep2-mean.eps -rainbow blue
+gmx_mpi xpm2ps -f v160m-rep1-mean.xpm -o v160m-rep1-mean.eps -rainbow blue
+gmx_mpi xpm2ps -f v160m-rep2-mean.xpm -o v160m-rep2-mean.eps -rainbow blue

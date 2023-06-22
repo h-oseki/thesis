@@ -1,0 +1,104 @@
+---
+title: "Resultados replicas"
+author: "-hoseki"
+date: "6/16/2021"
+output: pdf_document
+---
+
+# Estabilidad de la simulación
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+library(ggplot2)
+library(gridExtra)
+library(grid)
+
+ggplot(rmsd, aes(x = time, y = rmsd)) + 
+  geom_line(aes(color = Structure, linetype = Structure), size = 0.8) + 
+  scale_color_manual(values = c("dodgerblue3", "mediumorchid2", "firebrick2")) +
+  scale_linetype_manual(values=c("dashed", "solid", "twodash")) +
+  xlab("Time (ns)") + ylab("RMSD (nm)") + a + ggtitle("RMSD")
+```
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+ggplot(gr, aes(x = time, y = all)) + ggtitle("Radio de giro") + 
+  geom_line(aes(color = Structure, linetype = Structure), size = 0.8) + 
+  scale_color_manual(values = c("dodgerblue3", "mediumorchid2", "firebrick2")) +
+  xlab("Time (ns)") + ylab(expression(R["g"] (nm))) + ylim(2,2.5) +
+  scale_linetype_manual(values=c("dashed", "solid", "twodash")) + a
+```
+
+De la estabilidad casi no tengo mucho que decir. La ultima replica (3) es un poco mas inestable, pero las tres simulaciones estabilizan bastante bien, y a valores bastante similares. 
+En el radio de giro hay una cuasi convergencia, me parecio copado. 
+
+# B-factors
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+C <- ggplot(bfacs[c(1:197, 395:591, 789:985),], aes(x = res, y = nbfac)) + ylim(-0.6, 9) + 
+  geom_line(aes(color = Structure, linetype = Structure), size = 1) + ylab("Normalized B-factor") + 
+  scale_color_manual(values = c("dodgerblue3", "mediumorchid2", "firebrick2")) +
+  scale_linetype_manual(values=c("twodash", "solid", "twodash")) + a +
+  geom_line(aes(y = 0.75), color = "red", alpha = 0.5, linetype = 1) +
+  scale_x_continuous(breaks = c(146, 156, 166, 176, 186, 196, 206, 216, 226, 236, 
+                                246, 256, 266, 276, 286, 296, 306, 316, 326, 336),
+                     labels = paste(c("ALA146", "SER156", "TRP166", "VAL176", "GLU186", 
+                                      "ALA196", "LEU206", "ASP216", "TYR226", "THR236", 
+                                      "LYS246", "ASP256", "PHE266", "MET276", "ARG286", 
+                                      "PHE296", "SER306", "LEU316", "GLU326", "TRP336"))) +
+  annotate("text", x=-Inf, y=Inf, label="Chain A", hjust=-.2, vjust=2, fontface="bold") + 
+  annotate("rect", xmin = 189, xmax=200, ymin= -0.6, ymax=9, alpha=.2, fill="grey60") + 
+  annotate("rect", xmin = 232, xmax=244, ymin= -0.6, ymax=9, alpha=.2, fill="grey60") +
+  annotate("rect", xmin = 254, xmax=258, ymin= -0.6, ymax=9, alpha=.2, fill="grey60") +
+  annotate("rect", xmin = 322, xmax=328, ymin= -0.6, ymax=9, alpha=.2, fill="grey60") +
+  annotate("rect", xmin = 278, xmax=287, ymin= -0.6, ymax=9, alpha=.2, fill="yellowgreen") +
+  theme(
+    panel.grid.major = element_line(color = NA), 
+    panel.grid.minor = element_line(color = NA),
+    axis.text.x = element_text(angle = 90, face = "bold", size = 7),
+    plot.title = element_text(colour = 'black', size = 15),
+    axis.title = element_text(colour = 'black', face = 'italic'),
+    panel.background = element_rect(fill = "white", colour = "black",),
+    axis.title.x = element_blank()) 
+D <- ggplot(bfacs[c(198:394, 592:788, 986:1182),], aes(x = res, y = nbfac)) + 
+  geom_line(aes(color = Structure, linetype = Structure), size = 1) + ylab(" ") + xlab("Residues") + 
+  scale_color_manual(values = c("dodgerblue3", "mediumorchid2", "firebrick2")) +
+  scale_linetype_manual(values=c("twodash", "solid", "twodash")) + a + ylim(-0.6, 9) +
+  scale_x_continuous(breaks = c(343, 353, 363, 373, 383, 393, 403, 413, 423, 433, 
+                                443, 453, 463, 473, 483, 493, 503, 513, 523, 533),
+                     labels = paste(c("ALA146", "SER156", "TRP166", "VAL176", "GLU186", 
+                                      "ALA196", "LEU206", "ASP216", "TYR226", "THR236", 
+                                      "LYS246", "ASP256", "PHE266", "MET276", "ARG286", 
+                                      "PHE296", "SER306", "LEU316", "GLU326", "TRP336"))) +
+  geom_line(aes(y = 0.75), color = "red", alpha = 0.5, linetype = 1) + 
+  annotate("text", x=-Inf, y=Inf, label="Chain B", hjust=-.2, vjust=2, fontface="bold") +
+  annotate("rect", xmin = 386, xmax=397, ymin= -0.6, ymax=9, alpha=.2, fill="grey60") +
+  annotate("rect", xmin = 429, xmax=441, ymin= -0.6, ymax=9, alpha=.2, fill="grey60") +
+  annotate("rect", xmin = 451, xmax=455, ymin= -0.6, ymax=9, alpha=.2, fill="grey60") + 
+  annotate("rect", xmin = 519, xmax=525, ymin= -0.6, ymax=9, alpha=.2, fill="grey60") +
+  annotate("rect", xmin = 475, xmax=484, ymin= -0.6, ymax=9, alpha=.2, fill="yellowgreen") +
+  theme(axis.text.x = element_text(angle = 90, face = "bold", size = 7),
+        panel.grid.major = element_line(color = NA), 
+        panel.grid.minor = element_line(color = NA),
+        plot.title = element_text(colour = 'black', size = 15),
+        axis.title = element_text(colour = 'black', face = 'italic'),
+        panel.background = element_rect(fill = "white", colour = "black",),
+        axis.title.x = element_blank()) 
+
+ggarrange(C, D, common.legend = TRUE, legend = "bottom") 
+```
+
+Reminder: las regiones agregadas (ya sea en la abierta o la cerrada) estan sombreadas en gris, y la region de polimerizacion esta sombreada en verde. 
+
+No se si son buenas o malas noticias, pero no parece haber exposicion del sitio de polimerizacion en la ultima replica, cuando si lo hay en las primeras dos (para la cadena A). 
+Otra cosa que destaco es la alta flexibilidad de la region conectora en la ultima replica, que esta muy cerca de los extremos. 
+
+# Puentes de hidrogeno
+
+Les dejo el link para que puedan ver la obra de arte. 
+
+https://jamboard.google.com/d/1uBEUTJtjxcQmtpwdZ1XPmTFMq620Fix_Gw0bj-d3bVE/edit?usp=sharing
+
+En cada hoja esta el intento de grafico para cada replica, y trate de diferencias por colores los dominios y las cadenas. 
+
+Todavia tengo que analizarlo bien en detalle, pero lo que puedo ver es que, en las primeras dos replicas, la region de andamiaje que no se expone interactua con el fosfato 3' del ligando (SER268B), cosa que no pasa con la cadena que si se expone. Por otro lado, en la ultima replica, que no hay exposicion de ninguna de las cadenas, las regiones de andamiaje ni se acercan al ligando. 
+
+Hay que seguir viendo mas en detalle el tema de las interacciones. Con Ari estamos viendo algunas opciones distintas a vmd, pero por ahora es una buena aproximacion a lo que puede estar pasando. 

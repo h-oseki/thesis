@@ -1,0 +1,82 @@
+---
+title: "replicas"
+author: "-hoseki"
+date: "6/20/2021"
+output: pdf_document
+---
+
+Hice un millon de graficos, como para chusmear que puede estar pasando. Para todas las replicas son los mismos y lo divide en dos partes, basandome en cuanto flashe para hacer los graficos. 
+
+### Parte 1 : graficos cuasi normales
+
+* Distancia del centro de masas de la region de polimerizacion (A & B) y el centro de masas de STING a lo largo de la simulacion. 
+* Distancia entre las serinas 268 (A & B) y el ligando a lo largo de la simulacion. 
+* Ocurrencia de puentes de hidrogeno entre el ligando y la serina 268 A a lo largo del tiempo. 
+* Ocurrencia de puentes de hidrogeno entre el ligando y la serina 268 B a lo largo del tiempo. 
+
+Grafique estos primeros uno abajo del otro para poder comparar bien que pasa en el tiempo. 
+
+### Parte 2 : aca flashe colores cuando habia sonido. 
+
+* Distancia de la region de polimerizacion (cadena A) con el centro de masas de STING vs distancia entre el ligando y la serina 268 A, pintado por tiempo. 
+* Distancia de la region de polimerizacion (cadena A) con el centro de masas de STING vs distancia entre el ligando y la serina 268 A, pintado por la ocurrencia de puentes de hidrogeno.  
+* Distancia de la region de polimerizacion (cadena B) con el centro de masas de STING vs distancia entre el ligando y la serina 268 B, pintado por tiempo. 
+* Distancia de la region de polimerizacion (cadena B) con el centro de masas de STING vs distancia entre el ligando y la serina 268 B, pintado por la ocurrencia de puentes de hidrogeno.  
+
+# REPLICA 1 
+
+## Parte 1
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=15, fig.width=15}
+library(ggplot2)
+library(gridExtra)
+library(grid)
+
+ggarrange(rep1a, rep1b, rep1c, rep1d, 
+                    common.legend = TRUE, legend = "bottom",
+                    ncol = 1, nrow = 4)
+```
+
+## Parte 2
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=15, fig.width=15}
+ggarrange(ggarrange(rep1e, rep1g, ncol = 1, nrow = 2,
+                    common.legend = TRUE, legend = "bottom"),
+          ggarrange(rep1f, rep1h, ncol = 1, nrow = 2,
+                    common.legend = TRUE, legend = "bottom"),
+          ncol = 2, nrow = 1)
+```
+
+# REPLICA 2
+
+## Parte 1
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=15, fig.width=15}
+ggarrange(rep2a, rep2b, rep2c, rep2d, 
+          common.legend = TRUE, legend = "bottom",
+          ncol = 1, nrow = 4)
+```
+
+## Parte 2
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=15, fig.width=15}
+ggarrange(ggarrange(rep2e, rep2g, ncol = 1, nrow = 2,
+                    common.legend = TRUE, legend = "bottom"),
+          ggarrange(rep2f, rep2h, ncol = 1, nrow = 2,
+                    common.legend = TRUE, legend = "bottom"),
+          ncol = 2, nrow = 1)
+```
+
+# REPLICA 3
+
+## Parte 1
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=15, fig.width=15}
+ggarrange(rep3a, rep3b, rep3c, rep3d, 
+          common.legend = TRUE, legend = "bottom",
+          ncol = 1, nrow = 4)
+```
+
+## Parte 2
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=15, fig.width=15}
+ggarrange(ggarrange(rep3e, rep3g, ncol = 1, nrow = 2,
+                    common.legend = TRUE, legend = "bottom"),
+          ggarrange(rep3f, rep3h, ncol = 1, nrow = 2,
+                    common.legend = TRUE, legend = "bottom"),
+          ncol = 2, nrow = 1)
+```

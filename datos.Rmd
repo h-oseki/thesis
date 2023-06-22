@@ -1,0 +1,114 @@
+---
+title: "datos"
+author: "-hoseki"
+date: "6/26/2021"
+output: pdf_document
+---
+
+Voy a tirar mucha mucha mucha data, para tener todo en el mismo pdf. Lo que te habia mandado de otros pdfs, lo copie y pegue aca. 
+
+# Simulaciones de STING cerrada + ligando (3 replicas)
+
+## Estabilidad de la simulación
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.width=15}
+library(ggplot2)
+library(gridExtra)
+library(grid)
+
+ggarrange(rmsd_reps, gr_reps, common.legend = TRUE, legend = "bottom") 
+```
+
+De la estabilidad casi no tengo mucho que decir. La ultima replica (3) es un poco mas inestable, pero las tres simulaciones estabilizan bastante bien, y a valores bastante similares. 
+En el radio de giro hay una cuasi convergencia, me parecio copado.
+
+## B-factors
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.width=15}
+ggarrange(bfacs_reps_A, bfacs_reps_B, common.legend = TRUE, legend = "bottom")
+```
+
+Reminder: las regiones agregadas (ya sea en la abierta o la cerrada) estan sombreadas en gris, y la region de polimerizacion esta sombreada en verde. 
+
+No se si son buenas o malas noticias, pero no parece haber exposicion del sitio de polimerizacion en la ultima replica, cuando si lo hay en las primeras dos (para la cadena A). 
+Otra cosa que destaco es la alta flexibilidad de la region conectora en la ultima replica, que esta muy cerca de los extremos. 
+
+NEW: Largue los 100 ns extra de la simulacion de la replica 3, termina el jueves (1 de julio creo) a la madrugada.
+
+## Millon de graficos sobre la region de polimerizacion y los puentes de hidrogeno 
+
+Deje solo los graficos que me parecen relevantes, o que valen la pena seguir explorando. Dato, el grafico de los puentes de hidrogenos estaba bien, nosotros lo estabamos viendo mal. Cuando nos juntemos te explico bien eso, pero en si, hay que tener en cuenta las lineas que se formen en los ejes horizontales. 
+
+### Tipos de graficos: 
+
+* Distancia normalizada del centro de masas de la region de polimerizacion (A & B) y el centro de masas de STING a lo largo de la simulacion.NEW: La normalizacion la hice respecto de la distancia inicial entre el centro de masas y la region de polimerizacion. 
+* Ocurrencia de puentes de hidrogeno entre el ligando y la serina 268 A a lo largo del tiempo. 
+* Ocurrencia de puentes de hidrogeno entre el ligando y la serina 268 B a lo largo del tiempo. 
+
+### Replica 1
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=15, fig.width=15}
+ggarrange(rep1a, rep1c, rep1d, 
+                    common.legend = TRUE, legend = "bottom",
+                    ncol = 1, nrow = 3)
+```
+
+### Replica 2 
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=15, fig.width=15}
+ggarrange(rep2a, rep2c, rep2d, 
+          common.legend = TRUE, legend = "bottom",
+          ncol = 1, nrow = 3)
+```
+
+### Replica 3
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=15, fig.width=15}
+ggarrange(rep3a, rep3c, rep3d, 
+          common.legend = TRUE, legend = "bottom",
+          ncol = 1, nrow = 4)
+```
+
+
+# Simulacion STING cerrada + ligando rotado
+
+## Estabilidad de la simulacion
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.width=15}
+ggarrange(rot_rmsd, rot_gr, common.legend = TRUE, legend = "bottom") 
+```
+
+El radio de giro da perfecto, pero el rmsd tiene sus inestabilidades, principalmente entre los 100 y 150 ns. Viendo la simulacion, creo que se debe a la region conectora, porque en ese lapso de tiempo, se van al carajo. 
+Otra cosa que me parecio raro, es que en vmd no reconocio a una de las patitas (region conectora) como helices alfa, no se, raro. 
+
+## B-factors
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.width=15}
+ggarrange(rot_bfacA, rot_bfacB, common.legend = TRUE, legend = "bottom")
+```
+
+Bueno, aca se ve que una de las patitas se va al carajo (de hecho, creo que es el valor de bfactor normalizado mas alto que tuve). 
+En cuanto a la region de polimerizacion, ambas regiones parecen tener alta flexibilidad, pero es mayor la flexibilidad de la cadena B (yay por eso). 
+
+## Millon de graficos sobre la region de polimerizacion y los puentes de hidrogeno
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=15, fig.width=15}
+ggarrange(rotrep1a, rotrep1c, rotrep1d, 
+                    common.legend = TRUE, legend = "bottom",
+                    ncol = 1, nrow = 3)
+```
+
+Hay que verlo bien en detalle, pero parece que la region de polimerizacion de la cadena A ya se encuentra mas alejada del centro de masas, y mantiene mucho mas esa distancia, mientras que la region de la cadena B se acerca y aleja con mas frecuencia. 
+
+# Control en cuanto a la exposicion de las regiones de polimerizacion
+
+Aca lo que hice fue tambien medir cuanto se alejan o acercan las regiones de polimerizacion, para las simulaciones con el ligando a carga neta cero, y ver si esa exposicion es en un momento particular, o si dura un tiempo particular. 
+
+Sombree en un rosa pastel super lindo los lapsos de tiempo en donde la distancia aumenta. 
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=15, fig.width=15}
+ggarrange(control_holo, control_rot,common.legend = TRUE, legend = "bottom", ncol = 1, nrow = 2)
+
+```
+
+En ambas simulaciones el momento de exposicion, y la duracion, difieren, por lo que lo podemos usar como "excusa" de porque no se expuso la region de polimerizacion en la replica 3. 
